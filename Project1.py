@@ -32,7 +32,7 @@ output = [
 
 # scanner
 def findTokens(file):
-    lineCounter = 0
+    lineCounter = 1 # initialize lineCounter at 1 as according to the project doc
     for line in file:
         line = line.strip() # remove whitespace
         start = 0   # initalize the start index of the token string that we want to check
