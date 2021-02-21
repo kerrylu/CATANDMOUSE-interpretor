@@ -19,9 +19,15 @@ keywords = {
     'size': 'size',
     'end': 'end'
 }
+# create table of punctuationSymbols and their associated types
 punctuationSymbols = {
     ';': ';'
 }
+# Initialize output array
+output = [
+    ['TYPE', 'CH VALUE', 'INT VALUE'],
+    ['====', '========', '=========']
+]
 
 # scanner
 def findTokens(file):
@@ -43,11 +49,12 @@ def findTokens(file):
                     string = line[temp:x]
                     temp = x
     # iterate character by character and check if the string is a token
+            isVariable = True
             if isToken(string):
                 if string in keywords:
-                    print(keywords[string])
+                    isVariable = False
                 elif string in punctuationSymbols:
-                    print(punctuationSymbols[string])
+                    isVariable = False
                 elif 0 <= len(string) <= 3:
                     isInteger = True
                     for i in range(len(string)):
@@ -62,14 +69,14 @@ def findTokens(file):
                 else:
                     if string not in symbolTable:
                         symbolTable[string.strip()] = ('variable', string, 0)
+                if isVariable:
+                    output.append([symbolTable[string.strip()][0], symbolTable[string.strip()][1], symbolTable[string.strip()][2]])
+                else:
+                    output.append([string.strip(), '', ''])
                 string = ''
-    return
-
-
-
-                    
-
                 
+    return
+         
     # if string is a keyword, return its type and None for its value
 
     # if string is a punctuation symbol, return its type and None for its value
@@ -97,10 +104,13 @@ def isValidVariableName(s):
 def insertToken(file):
     return
 # Handle Output
-def printOutput():
+def printOutput(output):
     # print out the following information for each token in three columns: 
     # the type of token, the character value, and the integer value. 
     # If the token is not entered into the symbol table, then the character and integer values are left blank.
+    col_width = max(len(str(word)) for row in output for word in row)
+    for row in output:
+        print (" ".join(str(word).ljust(col_width) for word in row))
     return
 # Error Handling
 def handleError():
@@ -115,4 +125,5 @@ if __name__ == "__main__":
     # TODO: Prompt user for the name of CATANDMOUSE program to test
     findTokens(args.file)
     print(symbolTable)
+    printOutput(output)
     # TODO: execute functions on input file
