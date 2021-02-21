@@ -25,22 +25,47 @@ punctuationSymbols = {
 
 # scanner
 def findTokens(file):
-    string = ''
     for line in file:
-        for ch in line.strip():
-            string += ch
+        line = line.strip()
+        temp = 0
+        string = ''
+        isComment = False
+        for x in range(len(line)):
+            if line[x] == '/' and line[x+1] and line[x+1] == '/':
+                isComment = True
+            if isComment:
+                continue
+            if x == len(line)-1 or line.strip()[x] == ' ':
+                if x == len(line)-1:
+                    string = line[temp:x+1]
+                    temp = x+1
+                else:
+                    string = line[temp:x]
+                    temp = x
     # iterate character by character and check if the string is a token
             if isToken(string):
                 if string in keywords:
                     print(keywords[string])
                 elif string in punctuationSymbols:
                     print(punctuationSymbols[string])
-                if len(string) <= 2:
+                elif 0 <= len(string) <= 3:
                     isInteger = True
-                    for i in len(string):
-                        if not i.isdigit():
+                    for i in range(len(string)):
+                        if not string[i].isdigit():
                             isInteger = False
                     if isInteger:
+                        if string not in symbolTable:
+                            symbolTable[string] = ('integer', string, int(string))
+                    else:
+                        if string not in symbolTable:
+                            symbolTable[string.strip()] = ('variable', string, 0)
+                else:
+                    if string not in symbolTable:
+                        symbolTable[string.strip()] = ('variable', string, 0)
+                string = ''
+    return
+
+
 
                     
 
@@ -49,17 +74,20 @@ def findTokens(file):
 
     # if string is a punctuation symbol, return its type and None for its value
 
+    # if string is an integer, enter it into the symbol table.
+    # the type of an integer is int.
+    # store the character value and convert the character string to an int and then store the int value
+
     # if string is a variable, enter it into the symbol table
     # the type of a variable is variable.
     # character value is the name of a variable with all letters in lowercase, and its int value is 0 for now.
 
-    # if string is an integer, enter it into the symbol table.
-    # the type of an integer is int.
-    # store the character value and convert the character string to an int and then store the int value
     return
 # check if string is a token
 def isToken(s):
     # TODO: Stack?
+    if s == '':
+        return False
     return True
 # check if variable name is valid
 def isValidVariableName(s):
@@ -86,4 +114,5 @@ if __name__ == "__main__":
 
     # TODO: Prompt user for the name of CATANDMOUSE program to test
     findTokens(args.file)
+    print(symbolTable)
     # TODO: execute functions on input file
