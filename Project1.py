@@ -77,11 +77,10 @@ def scan(file):
             if tokenHandler.isToken(string):         # filters out pure whitespace
                 if not tokenHandler.isValidToken(string):    # handles invalid tokens
                     print('Error, line number ' + str(lineCounter) + ', invalid token: ' + string)
-                else:
+                else:   # valid token
                     tokenType = tokenHandler.findType(string)    # find the type of the token
                     if string not in symbolTable:   # update symbolTable
                         insertToSymbolTable(string, tokenType)
-
                     # Handle formatting of printing the output
                     if tokenType != '':  # encompasses variables and integers
                         print(symbolTable[string.strip()][0] + '  ' + symbolTable[string.strip()][1] + '  ' + str(symbolTable[string.strip()][2]))
