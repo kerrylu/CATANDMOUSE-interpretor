@@ -40,11 +40,33 @@ def findTokens(file):
             # skip everything if comment
             if isComment:
                 continue
+            punctuationWarning = False
+            punctuation = ''
             # tokens are separated by whitespace, end of line, and end of file
-            if x == len(line)-1 or line.strip()[x] == ' ':  # x is the index of the line that separates tokens
-                if x == len(line)-1:    # x marks end of line
-                    # since x is at the end of the line, we don't need to set an upper bound
-                    string = line[start:]
+            if x == len(line)-1 or not line.strip()[x].isalnum():  # x is the index of the line that separates tokens
+                if x != len(line)-1 and line.strip()[x] != ' ':
+                    if line.strip()[x] in punctuationSymbols:
+                        if line.strip()[x-1] != ' ':
+                            print('Warning, need space between ' + str(line.strip()[x]) + ' and ' + str(line[start:x]))
+                            punctuationWarning = True
+                            punctuation = line.strip()[x]
+                    else:
+                        print('Warning, invalid character: ' + str(line.strip()[x]) + ' after ' + str(line[start:x]))
+                    string = line[start:x]
+                    start = x+1
+                elif x == len(line)-1:    # x marks end of line
+                    if line.strip()[x] in punctuationSymbols:
+                        if line.strip()[x-1] != ' ':
+                            print('Warning, need space between ' + str(line.strip()[x]) + ' and ' + str(line[start:x]))
+                            punctuationWarning = True
+                            punctuation = line.strip()[x]
+                            string = line[start:x]
+                    elif not line.strip()[x].isalnum():
+                        print('Warning, invalid character: ' + str(line.strip()[x]) + ' after ' + str(line[start:x]))
+                        string = line[start:x]
+                    else:
+                        # since x is at the end of the line, we don't need to set an upper bound
+                        string = line[start:]
                 else:   # x marks whitespace
                     # set upper bound so that string has no whitespace
                     string = line[start:x]
@@ -96,6 +118,8 @@ def findTokens(file):
                         print(symbolTable[string.strip()][0] + '  ' + symbolTable[string.strip()][1] + '  ' + str(symbolTable[string.strip()][2]))
                     else:   # keywords and punctuationSymbols are printed differently than variables and integers
                         print(string.strip())
+                    if punctuationWarning:
+                        print(punctuation)
                 string = '' # reinitialize string
         lineCounter += 1    # iterate lineCounter
                 
@@ -109,7 +133,6 @@ def isToken(s):
 
 # filters out edge cases
 def isValidToken(s):
-    # TODO: Stack?
     # punctuation is not alphanumeric so we need to return True before any other checks
     if s == ';':
         return True
