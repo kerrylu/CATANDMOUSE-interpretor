@@ -24,11 +24,6 @@ keywords = {
 punctuationSymbols = {
     ';': ';'
 }
-# Initialize output array
-output = [
-    ['TYPE', 'CH VALUE', 'INT VALUE'],
-    ['====', '========', '=========']
-]
 
 # scanner
 def findTokens(file):
@@ -93,10 +88,14 @@ def findTokens(file):
                     else:   # string is a variable
                         if string not in symbolTable:
                             symbolTable[string.strip()] = ('variable', string, 0)
+                    # Handle formatting of printing the output
+                    # print out the following information for each token in three columns: 
+                    # the type of token, the character value, and the integer value. 
+                    # If the token is not entered into the symbol table, then the character and integer values are left blank.
                     if isVariable:  # encompasses variables and integers
-                        output.append([symbolTable[string.strip()][0], symbolTable[string.strip()][1], symbolTable[string.strip()][2]])
+                        print(symbolTable[string.strip()][0] + '  ' + symbolTable[string.strip()][1] + '  ' + str(symbolTable[string.strip()][2]))
                     else:   # keywords and punctuationSymbols are printed differently than variables and integers
-                        output.append([string.strip(), '', ''])
+                        print(string.strip())
                 string = '' # reinitialize string
         lineCounter += 1    # iterate lineCounter
                 
@@ -122,21 +121,10 @@ def isValidToken(s):
             return False
     return True
 
-# Handle formatting of printing the output
-# print out the following information for each token in three columns: 
-# the type of token, the character value, and the integer value. 
-# If the token is not entered into the symbol table, then the character and integer values are left blank.
-def printOutput(output):
-    # sets column width to the length of the longest string 
-    col_width = max(len(str(word)) for row in output for word in row) + 2   # padding
-    # print row by row
-    for row in output:
-        print ("".join(str(word).ljust(col_width) for word in row))
-    return 0
-
 if __name__ == "__main__":
     # Prompt user for the name of CATANDMOUSE program to test
-    file = open('./' + input('Enter file name: '), 'r') 
+    file = open('./' + input('Enter file name: '), 'r')
+    print('TYPE' + '  ' + 'CH VALUE' + '  ' + 'INT VALUE')
+    print('====  ' + '========  ' + '=========')
     findTokens(file)        # find and handle tokens
-    printOutput(output)     # print output
     file.close()
