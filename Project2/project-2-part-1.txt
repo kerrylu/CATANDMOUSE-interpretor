@@ -1,0 +1,44 @@
+size 40 40					        // room: height 40, width 40
+begin 
+    cat pufflebear 0 0 east ; 		// cat, pufflebear, at (0,0) heading east
+    mouse momo 40 40 west ; 		// mouse, momo, at (40, 40) heading west
+    hole 20 20 ; 				    // hole: (20, 20)
+    repeat 3 				
+        move pufflebear ; 		    // pufflebear moves 1 east
+        move momo ; 			    // momo moves 1 west
+    end ; 					        // pufflebear: (3, 0), momo: (37, 40)
+    clockwise pufflebear ; 		    // pufflebear heading south
+    repeat 3 
+        move momo ; 			
+        move pufflebear 3 ; 		
+    end ; 					        // pufflebear: (3, 9), momo: (34, 40)
+    repeat 5
+        move pufflebear 2;
+        move momo 5;
+    end ;					        // pufflebear: (3, 19), momo: (9, 40)
+    clockwise pufflebear ;
+    clockwise pufflebear ;
+    clockwise pufflebear ;			// pufflebear heading east
+    clockwise momo ;			    // momo heading north
+    repeat 6
+        move pufflebear ;
+    end ;					        // pufflebear: (9, 19), momo: (9, 40)
+    repeat 3
+        move momo 7 ;	
+        move pufflebear 3 ;
+    end ;					        // pufflebear: (18, 19), momo: (9, 19)
+    clockwise momo ;			    // momo heading east
+    move momo 9 ;			        // pufflebear: (18, 19), momo: (18, 19)
+    repeat 2
+        move pufflebear ;
+        move momo ;
+    end ;					        // pufflebear (20, 19), momo: (20, 19)
+    repeat 1
+        clockwise momo ;
+        clockwise pufflebear ;
+    end ;					        // pufflebear and momo heading south
+    repeat 1
+        move pufflebear ;
+        move momo ;
+    end ;					        // pufflebear and momo in the hole at (20, 20)
+halt	
