@@ -22,20 +22,22 @@ grammar = {
 def readTable(file):
     lines = file.readlines()
     m = len(lines)
-    n = len(lines[0]) // 2
+    n = (len(lines[0].strip()) // 2) + 1
     table = [[''] * n for _ in range(m)]
     row = 0
     for line in lines:
-        col = 0
         line = line.strip()
+        col = 0
         string = ''
-        for ch in line:
-            if ch == '&':
+        for x in range(len(line)):
+            if line[x] == '&' or x == len(line)-1:
+                if x == len(line)-1 and line[x] != '&':
+                    string += line[x]
                 table[row][col] = string
                 string = ''
                 col += 1
             else:
-                string += ch
+                string += line[x] 
         row += 1
     return table
 
