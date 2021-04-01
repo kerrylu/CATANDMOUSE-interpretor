@@ -21,6 +21,13 @@ keywords = {
     'size': 'size',
     'end': 'end'
 }
+specialKeywords = {
+    'size': 'z',
+    'move': 'o',
+    'clockwise': 'l',
+    'end': 'd',
+    'halt': 't'
+}
 # create table of punctuationSymbols and their associated types
 punctuationSymbols = {
     ';': ';'
@@ -48,23 +55,25 @@ def scan(file):
             if x == len(line)-1 or not line.strip()[x].isalnum():  # x is the index of the line that separates tokens
                 if x != len(line)-1 and line.strip()[x] != ' ':     # handles punctuation warning
                     if line.strip()[x] in punctuationSymbols:
+                        output.append(';')
                         if line.strip()[x-1] != ' ':
-                            print('Warning, need space between ' + str(line.strip()[x]) + ' and ' + str(line[start:x]))
+                            #print('Warning, need space between ' + str(line.strip()[x]) + ' and ' + str(line[start:x]))
                             punctuationWarning = True
                             punctuation = line.strip()[x]
-                    else:   # handles invalid characters
-                        print('Warning, invalid character: ' + str(line.strip()[x]) + ' after ' + str(line[start:x]))
+                    #else:   # handles invalid characters
+                        #print('Warning, invalid character: ' + str(line.strip()[x]) + ' after ' + str(line[start:x]))
                     string = line[start:x]
                     start = x+1
                 elif x == len(line)-1:    # x marks end of line
                     if line.strip()[x] in punctuationSymbols:   # handles punctuation warning
+                        output.append(';')
                         if line.strip()[x-1] != ' ':
-                            print('Warning, need space between ' + str(line.strip()[x]) + ' and ' + str(line[start:x]))
+                            #print('Warning, need space between ' + str(line.strip()[x]) + ' and ' + str(line[start:x]))
                             punctuationWarning = True
                             punctuation = line.strip()[x]
                             string = line[start:x]
                     elif not line.strip()[x].isalnum():     # handles invalid characters
-                        print('Warning, invalid character: ' + str(line.strip()[x]) + ' after ' + str(line[start:x]))
+                        #print('Warning, invalid character: ' + str(line.strip()[x]) + ' after ' + str(line[start:x]))
                         string = line[start:x]
                     else:
                         # since x is at the end of the line, we don't need to set an upper bound
@@ -85,11 +94,17 @@ def scan(file):
                         insertToSymbolTable(string, tokenType)
                     # Handle formatting of printing the output
                     if tokenType != '':  # encompasses variables and integers
-                        output.append((string, tokenType))
+                        output.append(tokenType[0])
+                    elif tokenType == 'punctuationSymbol':
+                        output.append(string)
                     else:   # keywords and punctuationSymbols are printed differently than variables and integers
-                        output.append((string, tokenType))
-                    if punctuationWarning:  # finally deals with punctuation warnings that we came across earlier
-                        print(punctuation)
+                        if string in keywords:
+                            if string in specialKeywords:
+                                output.append(specialKeywords[string])
+                            else:
+                                output.append(string[0])
+                    #if punctuationWarning:  # finally deals with punctuation warnings that we came across earlier
+                        #print(punctuation)
                 string = '' # reinitialize string
         lineCounter += 1    # iterate lineCounter
     return output
@@ -138,5 +153,7 @@ def findType(string):
             return 'integer'
     if isVariable:
         return 'variable'
+    if string in punctuationSymbols:
+        return 'punctuationSymbol'
     else:
         return ''
