@@ -1,4 +1,5 @@
 import scanner
+import numpy as np
 
 stack = []
 
@@ -21,24 +22,36 @@ grammar = {
 }
 def readTable(file):
     lines = file.readlines()
-    m = len(lines)
+    m = len(lines) // 2
     n = (len(lines[0].strip()) // 2) + 1
     table = [[''] * n for _ in range(m)]
+    specialTable = [[''] * 4 for _ in range(m)]
     row = 0
     for line in lines:
         line = line.strip()
         col = 0
+        if row >= 39:
+            col = -1
         string = ''
         for x in range(len(line)):
             if line[x] == '&' or x == len(line)-1:
                 if x == len(line)-1 and line[x] != '&':
                     string += line[x]
-                table[row][col] = string
+                if row >= 39:
+                    if col == -1:
+                        pass
+                    else:
+                        specialTable[row-39][col] = string
+                else:
+                    table[row][col] = string
                 string = ''
                 col += 1
             else:
                 string += line[x] 
         row += 1
+    table = np.hstack((table, specialTable))
+    print(len(table))
+    print(len(table[0]))
     return table
 
 def LRParseRoutine(tokenTypes, table):
