@@ -1,9 +1,9 @@
 # Project1.py
 # Scans input file of language CATANDMOUSE and identifies all tokens and prints their associated information
-import tokenHandler
 
 # initialize symbol table
 symbolTable = {}
+
 # create table of keywords and their associated types
 keywords = {
     'begin': 'begin',
@@ -25,8 +25,10 @@ keywords = {
 punctuationSymbols = {
     ';': ';'
 }
+
 # scanner
 def scan(file):
+    output = []
     lineCounter = 1 # initialize lineCounter at 1 as according to the project doc
     for line in file:
         line = line.strip() # remove whitespace
@@ -74,23 +76,23 @@ def scan(file):
                     start = x+1
             # iterate character by character and check if the string is a token
             string = string.lower()     # language is case insensitive
-            if tokenHandler.isToken(string):         # filters out pure whitespace
-                if not tokenHandler.isValidToken(string):    # handles invalid tokens
+            if isToken(string):         # filters out pure whitespace
+                if not isValidToken(string):    # handles invalid tokens
                     print('Error, line number ' + str(lineCounter) + ', invalid token: ' + string)
                 else:   # valid token
-                    tokenType = tokenHandler.findType(string)    # find the type of the token
+                    tokenType = findType(string)    # find the type of the token
                     if string not in symbolTable:   # update symbolTable
                         insertToSymbolTable(string, tokenType)
                     # Handle formatting of printing the output
                     if tokenType != '':  # encompasses variables and integers
-                        print(symbolTable[string.strip()][0] + '  ' + symbolTable[string.strip()][1] + '  ' + str(symbolTable[string.strip()][2]))
+                        output.append((string, tokenType))
                     else:   # keywords and punctuationSymbols are printed differently than variables and integers
-                        print(string.strip())
+                        output.append((string, tokenType))
                     if punctuationWarning:  # finally deals with punctuation warnings that we came across earlier
                         print(punctuation)
                 string = '' # reinitialize string
         lineCounter += 1    # iterate lineCounter
-    return 0
+    return output
 
 # handle insertion into symbolTable
 def insertToSymbolTable(string, tokenType):
@@ -100,11 +102,41 @@ def insertToSymbolTable(string, tokenType):
         symbolTable[string.strip()] = ('variable', string, 0)
     return
 
-if __name__ == "__main__":
-    # Prompt user for the name of CATANDMOUSE program to test
-    file = open('./' + input('Enter file name: '), 'r')
-    # formatting
-    print('TYPE' + '  ' + 'CH VALUE' + '  ' + 'INT VALUE')
-    print('====  ' + '========  ' + '=========')
-    scan(file)        # find and handle tokens
-    file.close()
+# check if string is a token
+def isToken(string):
+    if string.strip() == '': # filters out whitespace
+        return False
+    return True
+
+# filters out edge cases
+def isValidToken(string):
+    # punctuation is not alphanumeric so we need to return True before any other checks
+    if string == ';':
+        return True
+    # edge case: if string starts with 0, then the length of the string must be 1
+    if string[0] == 0 and len(s) > 1:
+        return False
+    for ch in string:
+        if not ch.isalnum():    # all characters in valid tokens should be alphabetical or digits
+            return False
+    return True
+
+# finds token type
+def findType(string):
+    isVariable = True   # tracks if the token is a variable
+    if string in keywords:  # string is a keyword
+        isVariable = False
+    elif string in punctuationSymbols:  # string is a punctuationSymbol
+        isVariable = False
+    elif 0 < len(string) <= 3:  # strings made up solely of integers are integer tokens if their length is 3 or less 
+                                # and variables if length greater than 3
+        isInteger = True    # tracks if the token is an integer
+        for i in range(len(string)):
+            if not string[i].isdigit():     # if any of the characters in the string are not integers, then the token is not an integer type
+                isInteger = False
+        if isInteger:
+            return 'integer'
+    if isVariable:
+        return 'variable'
+    else:
+        return ''
