@@ -1,5 +1,5 @@
-# Project1.py
-# Scans input file of language CATANDMOUSE and identifies all tokens and prints their associated information
+# scanner.py
+# Scans input file of language CATANDMOUSE and identifies all tokens and puts their types in an array
 
 # initialize symbol table
 symbolTable = {}
@@ -21,6 +21,7 @@ keywords = {
     'size': 'size',
     'end': 'end'
 }
+# some keywords have types that are different that their first letter
 specialKeywords = {
     'size': 'z',
     'move': 'o',
