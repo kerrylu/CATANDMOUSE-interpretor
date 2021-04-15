@@ -219,6 +219,12 @@ class Project3:
                 d = node.data[4]
                 positions[cat] = ['cat', i, j, d]
                 turtleQueue.append(('placeCat',i,j))
+                for obj in positions:
+                    if obj != 'hole' and obj != cat:
+                        if positions[obj][0] == 'mouse' and positions[cat][1] == positions[obj][1] and positions[cat][2] == positions[obj][2] and (i,j) not in positions['hole']:
+                            isDead.add(obj)
+                        if positions[obj][0] == 'cat' and positions[cat][1] == positions[obj][1] and positions[cat][2] == positions[obj][2]:
+                            isDead.add(cat)
             if nodeType == 'mouse':
                 mouse = node.data[1]
                 i = int(node.data[2])
@@ -226,6 +232,12 @@ class Project3:
                 d = node.data[4]
                 positions[mouse] = ['mouse', i, j, d]
                 turtleQueue.append(('placeMouse',i,j))
+                for obj in positions:
+                    if obj != 'hole' and obj != mouse:
+                        if positions[obj][0] == 'mouse' and positions[mouse][1] == positions[obj][1] and positions[mouse][2] == positions[obj][2] and (i,j) not in positions['hole']:
+                            isDead.add(mouse)
+                        if positions[obj][0] == 'cat' and positions[mouse][1] == positions[obj][1] and positions[mouse][2] == positions[obj][2] and (i,j) not in positions['hole']:
+                            isDead.add(mouse)
             if nodeType == 'hole':
                 i = int(node.data[1])
                 j = int(node.data[2])
@@ -242,53 +254,100 @@ class Project3:
                 var = node.data[1]
                 distance = node.data[2]
                 change = 0
-                if positions[var][3] == 'north':
-                    change = positions[var][2] - int(distance)
-                    if change > y or change < 0 or positions[var][1] > x or positions[var][1] < 0:
-                        error = True
-                if positions[var][3] == 'west':
-                    change = positions[var][1] - int(distance)
-                    if change > x or change < 0 or positions[var][2] > x or positions[var][2] < 0:
-                        error = True
-                if positions[var][3] == 'south':
-                    change = positions[var][2] + int(distance)
-                    if change > y or change < 0 or positions[var][1] > x or positions[var][1] < 0:
-                        error = True
-                if positions[var][3] == 'east':
-                    change = positions[var][1] + int(distance)
-                    if change > x or change < 0 or positions[var][2] > x or positions[var][2] < 0:
-                        error = True
-                if positions[var][0] == 'mouse':
+                if var in isDead:
+                    pass
+                else:
                     if positions[var][3] == 'north':
-                        if (positions[var][1], change) in positions['hole']:     # mouse moves to hole
-                            turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, True, error))
-                        else:
-                            turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, False, error))
+                        change = positions[var][2] - int(distance)
+                        if change > y or change < 0 or positions[var][1] > x or positions[var][1] < 0:
+                            error = True
                     if positions[var][3] == 'west':
-                        if (change, positions[var][2]) in positions['hole']:     # mouse moves to hole
-                            turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, True, error))
-                        else:
-                            turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, False, error))
+                        change = positions[var][1] - int(distance)
+                        if change > x or change < 0 or positions[var][2] > x or positions[var][2] < 0:
+                            error = True
                     if positions[var][3] == 'south':
-                        if (positions[var][1], change) in positions['hole']:     # mouse moves to hole
-                            turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, True, error))
-                        else:
-                            turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, False, error))
+                        change = positions[var][2] + int(distance)
+                        if change > y or change < 0 or positions[var][1] > x or positions[var][1] < 0:
+                            error = True
                     if positions[var][3] == 'east':
-                        if (change, positions[var][2]) in positions['hole']:     # mouse moves to hole
-                            turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, True, error))
-                        else:
-                            turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, False, error))
-                if positions[var][0] == 'cat':
-                    turtleQueue.append(('moveCat', positions[var][1], positions[var][2], positions[var][3], distance, error))
-                if positions[var][3] == 'north':
-                    positions[var][2] = change
-                if positions[var][3] == 'west':
-                    positions[var][1] = change
-                if positions[var][3] == 'south':
-                    positions[var][2] = change
-                if positions[var][3] == 'east':
-                    positions[var][1] = change
+                        change = positions[var][1] + int(distance)
+                        if change > x or change < 0 or positions[var][2] > x or positions[var][2] < 0:
+                            error = True
+                    if positions[var][0] == 'mouse':
+                        if positions[var][3] == 'north':
+                            if (positions[var][1], change) in positions['hole']:     # mouse moves to hole
+                                turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, True, error))
+                            else:
+                                turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, False, error))
+                        if positions[var][3] == 'west':
+                            if (change, positions[var][2]) in positions['hole']:     # mouse moves to hole
+                                turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, True, error))
+                            else:
+                                turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, False, error))
+                        if positions[var][3] == 'south':
+                            if (positions[var][1], change) in positions['hole']:     # mouse moves to hole
+                                turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, True, error))
+                            else:
+                                turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, False, error))
+                        if positions[var][3] == 'east':
+                            if (change, positions[var][2]) in positions['hole']:     # mouse moves to hole
+                                turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, True, error))
+                            else:
+                                turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, False, error))
+                        for obj in positions:
+                            if obj != 'hole' and obj != var:       # sets are not subscriptable
+                                if positions[var][3] == 'north':
+                                    if positions[obj][0] == 'mouse' and positions[var][1] == positions[obj][1] and change == positions[obj][2] and (positions[var][1], change) not in positions['hole']:     # cat kills mouse
+                                        isDead.add(var)
+                                    if positions[obj][0] == 'cat' and positions[var][1] == positions[obj][1] and change == positions[obj][2]:     # cat dies upon collision with another cat
+                                        isDead.add(var)  
+                                if positions[var][3] == 'west':
+                                    if positions[obj][0] == 'mouse' and change == positions[obj][1] and positions[var][2] == positions[obj][2] and (change, positions[var][2]) not in positions['hole']:     # cat kills mouse
+                                        isDead.add(var)
+                                    if positions[obj][0] == 'cat' and change == positions[obj][1] and positions[var][2] == positions[obj][2]:     # cat dies upon collision with another cat
+                                        isDead.add(var)
+                                if positions[var][3] == 'south':
+                                    if positions[obj][0] == 'mouse' and positions[var][1] == positions[obj][1] and change == positions[obj][2] and (positions[var][1], change) not in positions['hole']:     # cat kills mouse
+                                        isDead.add(var)
+                                    if positions[obj][0] == 'cat' and positions[var][1] == positions[obj][1] and change == positions[obj][2]:     # cat dies upon collision with another cat
+                                        isDead.add(var)
+                                if positions[var][3] == 'east':
+                                    if positions[obj][0] == 'mouse' and change == positions[obj][1] and positions[var][2] == positions[obj][2] and (change, positions[var][2]) not in positions['hole']:     # cat kills mouse
+                                        isDead.add(var)
+                                    if positions[obj][0] == 'cat' and change == positions[obj][1] and positions[var][2] == positions[obj][2]:     # cat dies upon collision with another cat
+                                        isDead.add(var)
+                    if positions[var][0] == 'cat':
+                        turtleQueue.append(('moveCat', positions[var][1], positions[var][2], positions[var][3], distance, error))
+                        for obj in positions:
+                            if obj != 'hole' and obj != var:
+                                if positions[var][3] == 'north':
+                                    if positions[obj][0] == 'mouse' and positions[var][1] == positions[obj][1] and change == positions[obj][2] and (positions[var][1], change) not in positions['hole']:     # cat kills mouse
+                                        isDead.add(obj)
+                                    if positions[obj][0] == 'cat' and positions[var][1] == positions[obj][1] and change == positions[obj][2]:     # cat dies upon collision with another cat
+                                        isDead.add(var)  
+                                if positions[var][3] == 'west':
+                                    if positions[obj][0] == 'mouse' and change == positions[obj][1] and positions[var][2] == positions[obj][2] and (change, positions[var][2]) not in positions['hole']:     # cat kills mouse
+                                        isDead.add(obj)
+                                    if positions[obj][0] == 'cat' and change == positions[obj][1] and positions[var][2] == positions[obj][2]:     # cat dies upon collision with another cat
+                                        isDead.add(var)
+                                if positions[var][3] == 'south':
+                                    if positions[obj][0] == 'mouse' and positions[var][1] == positions[obj][1] and change == positions[obj][2] and (positions[var][1], change) not in positions['hole']:     # cat kills mouse
+                                        isDead.add(obj)
+                                    if positions[obj][0] == 'cat' and positions[var][1] == positions[obj][1] and change == positions[obj][2]:     # cat dies upon collision with another cat
+                                        isDead.add(var)
+                                if positions[var][3] == 'east':
+                                    if positions[obj][0] == 'mouse' and change == positions[obj][1] and positions[var][2] == positions[obj][2] and (change, positions[var][2]) not in positions['hole']:     # cat kills mouse
+                                        isDead.add(obj)
+                                    if positions[obj][0] == 'cat' and change == positions[obj][1] and positions[var][2] == positions[obj][2]:     # cat dies upon collision with another cat
+                                        isDead.add(var)
+                    if positions[var][3] == 'north':
+                        positions[var][2] = change
+                    if positions[var][3] == 'west':
+                        positions[var][1] = change
+                    if positions[var][3] == 'south':
+                        positions[var][2] = change
+                    if positions[var][3] == 'east':
+                        positions[var][1] = change
             if nodeType == 'clockwise':
                 var = node.data[1]
                 if positions[var][3] == 'north':
