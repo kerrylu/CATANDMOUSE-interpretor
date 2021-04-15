@@ -3,7 +3,13 @@
 import scanner
 import parser
 from collections import deque
+import tkinter
+from tkinter import messagebox
 import turtle
+
+# This code is to hide the main tkinter window
+root = tkinter.Tk()
+root.withdraw()
 
 class Node:
     def __init__(self, data): 
@@ -128,16 +134,20 @@ class Project3:
                 elif command[0] == 'placeHole':
                     i = command[1]
                     j = command[2]
+                    error = command[3]
                     trtl.up()
                     trtl.setpos(-300+(i*10), 300-(j*10))
                     trtl.down()
                     trtl.color('black')
                     trtl.circle(2)
+                    if error:
+                        messagebox.showerror("Error", "Hole out of bounds")
                 elif command[0] == 'moveCat':
                     i = command[1]
                     j = command[2]
                     d = command[3]
                     dist = command[4]
+                    error = command[5]
                     trtl.up()
                     trtl.setpos(-300+(i*10), 300-(j*10))
                     trtl.down()
@@ -152,11 +162,15 @@ class Project3:
                         trtl.setheading(270)
                     trtl.forward(10*int(dist))
                     trtl.circle(2)
+                    if error:
+                        messagebox.showerror("Error", "Cat out of bounds")
                 elif command[0] == 'moveMouse':
                     i = command[1]
                     j = command[2]
                     d = command[3]
                     dist = command[4]
+                    inHole = command[5]
+                    error = command[6]
                     trtl.up()
                     trtl.setpos(-300+(i*10), 300-(j*10))
                     trtl.down()
@@ -170,7 +184,12 @@ class Project3:
                     if d == 'south':
                         trtl.setheading(270)
                     trtl.forward(10*int(dist))
-                    trtl.circle(2)
+                    if inHole:      # don't draw mouse if it's hiding in a hole
+                        pass 
+                    else:
+                        trtl.circle(2)
+                    if error:
+                        messagebox.showerror("Error", "Mouse out of bounds")
             trtl.hideturtle()
             turtle.Screen().exitonclick()
             
@@ -178,13 +197,19 @@ class Project3:
         positions['hole'] = set()
         q = deque()
         q.append(tree[0])
+        x = 0
+        y = 0
+        isDead = set()
 
         while q:
+            error = False
             node = q.popleft()
             nodeType = node.data[0]
             if nodeType == 'size':
                 i = int(node.data[1])
                 j = int(node.data[2])
+                x = i
+                y = j
                 turtleQueue.append(('createGrid',i,j))
                 q.appendleft(node.data[4])
             if nodeType == 'cat':
@@ -204,7 +229,9 @@ class Project3:
             if nodeType == 'hole':
                 i = int(node.data[1])
                 j = int(node.data[2])
-                turtleQueue.append(('placeHole', i,j))
+                if i > x or i < 0 or j > y or j < 0:
+                    error = True
+                turtleQueue.append(('placeHole', i,j, error))
                 positions['hole'].add((i,j))
             if nodeType == 'seq':
                 L = node.data[1]
@@ -214,18 +241,54 @@ class Project3:
             if nodeType == 'move':
                 var = node.data[1]
                 distance = node.data[2]
-                if positions[var][0] == 'mouse':
-                    turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance))
-                if positions[var][0] == 'cat':
-                    turtleQueue.append(('moveCat', positions[var][1], positions[var][2], positions[var][3], distance))
+                change = 0
                 if positions[var][3] == 'north':
-                    positions[var][2] -= int(distance)
+                    change = positions[var][2] - int(distance)
+                    if change > y or change < 0:
+                        error = True
                 if positions[var][3] == 'west':
-                    positions[var][1] -= int(distance)
+                    change = positions[var][1] - int(distance)
+                    if change > x or change < 0:
+                        error = True
                 if positions[var][3] == 'south':
-                    positions[var][2] += int(distance)
+                    change = positions[var][2] + int(distance)
+                    if change > y or change < 0:
+                        error = True
                 if positions[var][3] == 'east':
-                    positions[var][1] += int(distance)
+                    change = positions[var][1] + int(distance)
+                    if change > x or change < 0:
+                        error = True
+                if positions[var][0] == 'mouse':
+                    if positions[var][3] == 'north':
+                        if (positions[var][1], change) in positions['hole']:     # mouse moves to hole
+                            turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, True, error))
+                        else:
+                            turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, False, error))
+                    if positions[var][3] == 'west':
+                        if (change, positions[var][2]) in positions['hole']:     # mouse moves to hole
+                            turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, True, error))
+                        else:
+                            turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, False, error))
+                    if positions[var][3] == 'south':
+                        if (positions[var][1], change) in positions['hole']:     # mouse moves to hole
+                            turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, True, error))
+                        else:
+                            turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, False, error))
+                    if positions[var][3] == 'east':
+                        if (change, positions[var][2]) in positions['hole']:     # mouse moves to hole
+                            turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, True, error))
+                        else:
+                            turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance, False, error))
+                if positions[var][0] == 'cat':
+                    turtleQueue.append(('moveCat', positions[var][1], positions[var][2], positions[var][3], distance, error))
+                if positions[var][3] == 'north':
+                    positions[var][2] = change
+                if positions[var][3] == 'west':
+                    positions[var][1] = change
+                if positions[var][3] == 'south':
+                    positions[var][2] = change
+                if positions[var][3] == 'east':
+                    positions[var][1] = change
             if nodeType == 'clockwise':
                 var = node.data[1]
                 if positions[var][3] == 'north':
