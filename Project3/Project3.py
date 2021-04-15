@@ -244,19 +244,19 @@ class Project3:
                 change = 0
                 if positions[var][3] == 'north':
                     change = positions[var][2] - int(distance)
-                    if change > y or change < 0:
+                    if change > y or change < 0 or positions[var][1] > x or positions[var][1] < 0:
                         error = True
                 if positions[var][3] == 'west':
                     change = positions[var][1] - int(distance)
-                    if change > x or change < 0:
+                    if change > x or change < 0 or positions[var][2] > x or positions[var][2] < 0:
                         error = True
                 if positions[var][3] == 'south':
                     change = positions[var][2] + int(distance)
-                    if change > y or change < 0:
+                    if change > y or change < 0 or positions[var][1] > x or positions[var][1] < 0:
                         error = True
                 if positions[var][3] == 'east':
                     change = positions[var][1] + int(distance)
-                    if change > x or change < 0:
+                    if change > x or change < 0 or positions[var][2] > x or positions[var][2] < 0:
                         error = True
                 if positions[var][0] == 'mouse':
                     if positions[var][3] == 'north':
