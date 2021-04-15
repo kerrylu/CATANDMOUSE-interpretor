@@ -62,97 +62,6 @@ class Project3:
 
     def traverseTree(tree):
         turtleQueue = []
-        '''
-        def createGrid(i,j):
-            sc=turtle.Screen()
-            trtl=turtle.Turtle()
-            # method to draw y-axis lines
-            def drawy(val):
-                # line
-                trtl.forward(j*10)
-                # set position
-                trtl.up()
-                trtl.setpos(-300+val,-300)
-                trtl.down()
-            # method to draw y-axis lines
-            def drawx(val):
-                # line
-                trtl.forward(i*10)
-                # set position
-                trtl.up()
-                trtl.setpos(-300,-300+val)
-                trtl.down()
-
-            # Main Section
-            # set screen
-            sc.setup(800,800)    
-            # set turtle features
-            trtl.speed(100)
-            trtl.up()
-            trtl.setpos(-300,-300)
-            trtl.down()
-            trtl.left(90)  
-            trtl.color('lightgreen')
-            # y lines
-            for y in range(i+1):
-                drawy(10*(y+1))
-            # set position for x lines
-            trtl.right(90)
-            trtl.up()
-            trtl.setpos(-300,-300)
-            trtl.down()
-            # x lines
-            for x in range(j+1):
-                drawx(10*(x+1))
-            turtle.Screen().exitonclick()
-            
-        def placeCat(i,j):
-            trtl.up()
-            trtl.setpos(-300+(i*10), -300+(j*10))
-            trtl.down()
-            trtl.color('red')
-            t.circle(5)
-        def placeMouse(i,j):
-            trtl.up()
-            trtl.setpos(-300+(i*10), -300+(j*10))
-            trtl.down()
-            trtl.color('blue')
-            t.circle(5)
-        def placeHole(i,j):
-            trtl.up()
-            trtl.setpos(-300+(i*10), -300+(j*10))
-            trtl.down()
-            trtl.color('black')
-            t.circle(5)
-        def moveCat(i,j,d,dist):
-            trtl.up()
-            trtl.setpos(-300+(i*10), -300+(j*10))
-            trtl.down()
-            trtl.color('red')
-            if d == 'east':
-                pass 
-            if d == 'north':
-                turtle.setheading(90)
-            if d == 'north':
-                turtle.setheading(180)
-            if d == 'south':
-                turtle.setheading(270)
-            trtl.forward(10*dist)
-        def moveMouse(i,j,d,dist):
-            trtl.up()
-            trtl.setpos(-300+(i*10), -300+(j*10))
-            trtl.down()
-            trtl.color('blue')
-            if d == 'east':
-                pass 
-            if d == 'north':
-                turtle.setheading(90)
-            if d == 'north':
-                turtle.setheading(180)
-            if d == 'south':
-                turtle.setheading(270)
-            trtl.forward(10*dist)
-        '''
         def executeCommands(turtleQueue):
             dq = deque(turtleQueue)
             while dq:
@@ -234,7 +143,7 @@ class Project3:
                     trtl.down()
                     trtl.color('red')
                     if d == 'east':
-                        pass 
+                        trtl.setheading(0)
                     if d == 'north':
                         trtl.setheading(90)
                     if d == 'west':
@@ -247,16 +156,15 @@ class Project3:
                     i = command[1]
                     j = command[2]
                     d = command[3]
-                    print(d)
                     dist = command[4]
                     trtl.up()
                     trtl.setpos(-300+(i*10), -300+(j*10))
                     trtl.down()
                     trtl.color('blue')
                     if d == 'east':
-                        pass 
+                        trtl.setheading(0)
                     if d == 'north':
-                        trtl.seth(90)
+                        trtl.setheading(90)
                     if d == 'west':
                         trtl.setheading(180)
                     if d == 'south':
@@ -273,7 +181,6 @@ class Project3:
         while q:
             node = q.popleft()
             nodeType = node.data[0]
-            print(nodeType)
             if nodeType == 'size':
                 i = int(node.data[1])
                 j = int(node.data[2])
@@ -310,20 +217,28 @@ class Project3:
                     turtleQueue.append(('moveMouse', positions[var][1], positions[var][2], positions[var][3], distance))
                 if positions[var][0] == 'cat':
                     turtleQueue.append(('moveCat', positions[var][1], positions[var][2], positions[var][3], distance))
+                if positions[var][3] == 'north':
+                    positions[var][2] += int(distance)
+                if positions[var][3] == 'west':
+                    positions[var][1] -= int(distance)
+                if positions[var][3] == 'south':
+                    positions[var][2] -= int(distance)
+                if positions[var][3] == 'east':
+                    positions[var][1] += int(distance)
             if nodeType == 'clockwise':
                 var = node.data[1]
                 if positions[var][3] == 'north':
-                    positions[var][3] = 'west'
-                elif positions[var][3] == 'west':
-                    positions[var][3] = 'south'
-                elif positions[var][3] == 'south':
                     positions[var][3] = 'east'
-                elif positions[var][3] == 'east':
+                elif positions[var][3] == 'west':
                     positions[var][3] = 'north'
+                elif positions[var][3] == 'south':
+                    positions[var][3] = 'west'
+                elif positions[var][3] == 'east':
+                    positions[var][3] = 'south'
             if nodeType == 'repeat':
                 i = node.data[1]
                 for _ in range(int(i)):
-                    q.append(node.data[2])
+                    q.appendleft(node.data[2])
         executeCommands(turtleQueue)
         return
 
