@@ -74,10 +74,10 @@ class Project3:
                     # method to draw y-axis lines
                     def drawy(val):
                         # line
-                        trtl.forward(j*10)
+                        trtl.backward(j*10)
                         # set position
                         trtl.up()
-                        trtl.setpos(-300+val,-300)
+                        trtl.setpos(-300+val,300)
                         trtl.down()
                     # method to draw y-axis lines
                     def drawx(val):
@@ -85,7 +85,7 @@ class Project3:
                         trtl.forward(i*10)
                         # set position
                         trtl.up()
-                        trtl.setpos(-300,-300+val)
+                        trtl.setpos(-300,300-val)
                         trtl.down()
 
                     # Main Section
@@ -94,7 +94,7 @@ class Project3:
                     # set turtle features
                     trtl.speed(100)
                     trtl.up()
-                    trtl.setpos(-300,-300)
+                    trtl.setpos(-300,300)
                     trtl.down()
                     trtl.left(90)  
                     trtl.color('lightgreen')
@@ -104,7 +104,7 @@ class Project3:
                     # set position for x lines
                     trtl.right(90)
                     trtl.up()
-                    trtl.setpos(-300,-300)
+                    trtl.setpos(-300,300)
                     trtl.down()
                     # x lines
                     for x in range(j+1):
@@ -113,7 +113,7 @@ class Project3:
                     i = command[1]
                     j = command[2]
                     trtl.up()
-                    trtl.setpos(-300+(i*10), -300+(j*10))
+                    trtl.setpos(-300+(i*10), 300-(j*10))
                     trtl.down()
                     trtl.color('red')
                     trtl.circle(2)
@@ -121,7 +121,7 @@ class Project3:
                     i = command[1]
                     j = command[2]
                     trtl.up()
-                    trtl.setpos(-300+(i*10), -300+(j*10))
+                    trtl.setpos(-300+(i*10), 300-(j*10))
                     trtl.down()
                     trtl.color('blue')
                     trtl.circle(2)
@@ -129,7 +129,7 @@ class Project3:
                     i = command[1]
                     j = command[2]
                     trtl.up()
-                    trtl.setpos(-300+(i*10), -300+(j*10))
+                    trtl.setpos(-300+(i*10), 300-(j*10))
                     trtl.down()
                     trtl.color('black')
                     trtl.circle(2)
@@ -139,7 +139,7 @@ class Project3:
                     d = command[3]
                     dist = command[4]
                     trtl.up()
-                    trtl.setpos(-300+(i*10), -300+(j*10))
+                    trtl.setpos(-300+(i*10), 300-(j*10))
                     trtl.down()
                     trtl.color('red')
                     if d == 'east':
@@ -158,7 +158,7 @@ class Project3:
                     d = command[3]
                     dist = command[4]
                     trtl.up()
-                    trtl.setpos(-300+(i*10), -300+(j*10))
+                    trtl.setpos(-300+(i*10), 300-(j*10))
                     trtl.down()
                     trtl.color('blue')
                     if d == 'east':
@@ -171,6 +171,7 @@ class Project3:
                         trtl.setheading(270)
                     trtl.forward(10*int(dist))
                     trtl.circle(2)
+            trtl.hideturtle()
             turtle.Screen().exitonclick()
             
         positions = {}
@@ -218,11 +219,11 @@ class Project3:
                 if positions[var][0] == 'cat':
                     turtleQueue.append(('moveCat', positions[var][1], positions[var][2], positions[var][3], distance))
                 if positions[var][3] == 'north':
-                    positions[var][2] += int(distance)
+                    positions[var][2] -= int(distance)
                 if positions[var][3] == 'west':
                     positions[var][1] -= int(distance)
                 if positions[var][3] == 'south':
-                    positions[var][2] -= int(distance)
+                    positions[var][2] += int(distance)
                 if positions[var][3] == 'east':
                     positions[var][1] += int(distance)
             if nodeType == 'clockwise':
