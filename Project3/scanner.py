@@ -95,15 +95,15 @@ def scan(file):
                         insertToSymbolTable(string, tokenType)
                     # Handle formatting of printing the output
                     if tokenType != '':  # encompasses variables and integers
-                        output.append(tokenType[0])
+                        output.append((tokenType[0], string))
                     elif tokenType == 'punctuationSymbol':
-                        output.append(string)
+                        output.append((string, string))
                     else:   # keywords and punctuationSymbols are printed differently than variables and integers
                         if string in keywords:
                             if string in specialKeywords:
-                                output.append(specialKeywords[string])
+                                output.append((specialKeywords[string], string))
                             else:
-                                output.append(string[0])
+                                output.append((string[0], string))
                     #if punctuationWarning:  # finally deals with punctuation warnings that we came across earlier
                         #print(punctuation)
                 string = '' # reinitialize string

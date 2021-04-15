@@ -91,39 +91,46 @@ def LRParseRoutine(tokenTypes, table):
     stack.append(state)
     productions = []
     tokenTypes = deque(tokenTypes)
-    symbol = tokenTypes.popleft() # obtain the lookahead symbol
+    tup = tokenTypes.popleft() # obtain the lookahead symbol
+    symbol = tup[0]
     entry = table[state+1][symbolIndexes[symbol]] # table is the LR parse table
 
     while entry != 'acc':
         if entry == '':     # error
             return None
         if entry[0] == 's':     # shift
-            stack.append(symbol)
+            stack.append(tup)
             state = int(entry[1:])
             stack.append(state)
-            symbol = tokenTypes.popleft()
+            tup = tokenTypes.popleft()
+            symbol = tup[0]
         elif entry[0].isnumeric():  # also shift
-            stack.append(symbol)
+            stack.append(tup)
             state = int(entry)
             stack.append(state)
-            symbol = tokenTypes.popleft()
+            tup = tokenTypes.popleft()
+            symbol = tup[0]
         elif entry[0] == 'r':       # reduce
             lhs = grammar[int(entry[1:])][0]
             rhs = grammar[int(entry[1:])][1]
             n = 2*len(rhs)
+            toAppend = []
             while n > 0:    # pop entry.rule.rhs and states
-                stack.pop() 
+                toCheck = stack.pop() 
+                if type(toCheck) == tuple:
+                    toAppend.append(toCheck[1])
+                elif type(toCheck) == str:
+                    toAppend.append(toCheck)
                 n -= 1
+            toAppend.reverse()
             state = stack[-1] # do not pop!
             stack.append(lhs)
-            productions.append(lhs + '->' + rhs)
+            productions.append((lhs,toAppend,int(entry[1:])))
             state = table[int(state)+1][symbolIndexes[lhs]]
             stack.append(state) 
         entry = table[int(state)+1][symbolIndexes[symbol]]
     if symbol != '$':   # error
         return None
-        
-    productions.reverse()   # LR parser gives productions in reverse order so we un-reverse it
     return productions
 
 # debug

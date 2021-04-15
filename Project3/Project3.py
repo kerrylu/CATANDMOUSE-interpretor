@@ -2,6 +2,25 @@
 
 import scanner
 import parser
+class Node:
+    def __init__(self, data = []): 
+        self.data = data
+
+class Project3:
+    def createTree(structures):
+        STstack = []
+        for (x,y) in structures:
+            if z == 3:      # two non-terminals in RHS
+                pass
+                # TODO: create node of type "seq" containing references to the two syntax trees
+            if z == 0 or z == 2 or z == 4 or z == 5 or z == 10:     # one non-terminal in RHS
+                pass
+            else:
+                y[0] = Node(y[1:])
+                STstack.append(y[0])
+                
+
+
 
 if __name__ == "__main__":
     # create table
@@ -13,13 +32,12 @@ if __name__ == "__main__":
     # get tokens
     file = open('./' + input('Enter file name: '), 'r')
     tokenTypes = scanner.scan(file)
-    #print(tokenTypes)
+    #print(scanner.symbolTable)
     file.close()
 
     # parser
-    ret = parser.LRParseRoutine(tokenTypes+['$'], table)   # None if error, otherwise should be an array of productions
-    if ret == None:
+    structures = parser.LRParseRoutine(tokenTypes+['$'], table)   # None if error, otherwise should be an array of productions
+    if structures == None:
         print('CATANDMOUSE program is not syntactically correct')
     else:
-        print('CATANDMOUSE program is syntactically correct')
-        parser.printOutput(ret)
+        parser.printOutput(structures)
